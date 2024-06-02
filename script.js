@@ -1,172 +1,100 @@
 const questions = [
     {
-        question: "What should you do if you receive an email from an unknown sender asking for personal information?",
-        answers: [
-            "Reply with the information",
-            "Ignore the email",
-            "Click the link in the email",
-            "Forward the email to IT"
-        ],
-        correct: 1,
-        explanation: "You should ignore the email. It could be a phishing attempt to steal your personal information."
-    },
-    {
-        question: "What is the safest way to handle a USB drive found in the parking lot?",
-        answers: [
-            "Plug it into your computer to check its contents",
-            "Give it to a colleague",
-            "Throw it away",
-            "Hand it over to IT"
-        ],
-        correct: 3,
-        explanation: "You should hand it over to IT. It could contain malware that can harm your computer."
-    },
-    {
-        question: "How often should you update your passwords?",
-        answers: [
-            "Once a year",
-            "Every month",
-            "Every six months",
-            "Only when you forget it"
-        ],
-        correct: 2,
-        explanation: "You should update your passwords every six months to ensure better security."
-    },
-    {
-        question: "What is a common sign of a phishing email?",
-        answers: [
-            "Contains spelling errors",
-            "Is addressed to 'Dear Customer'",
-            "Includes a sense of urgency",
-            "All of the above"
-        ],
-        correct: 3,
-        explanation: "All of the above are common signs of a phishing email."
-    },
-    {
-        question: "What should you do if you suspect your computer is infected with malware?",
-        answers: [
-            "Run a full antivirus scan",
-            "Ignore it",
-            "Unplug your computer",
-            "Restart your computer"
-        ],
-        correct: 0,
-        explanation: "You should run a full antivirus scan to detect and remove the malware."
-    },
-    {
         question: "What is a strong password?",
+        image: "images/password.jpg",
         answers: [
-            "Your birthdate",
-            "123456",
-            "A random string of characters, including letters, numbers, and symbols",
-            "Your pet's name"
-        ],
-        correct: 2,
-        explanation: "A strong password is a random string of characters that includes letters, numbers, and symbols."
+            { text: "123456", correct: false, explanation: "This is a very common password and easy to guess." },
+            { text: "password", correct: false, explanation: "This is another common and easily guessed password." },
+            { text: "A1b2C3d4!", correct: true, explanation: "This password is strong because it includes a mix of letters, numbers, and symbols." },
+            { text: "qwerty", correct: false, explanation: "This is a common pattern on keyboards and easy to guess." }
+        ]
     },
     {
-        question: "What should you do if you receive a suspicious link in an email?",
+        question: "What should you do if you receive a suspicious email?",
+        image: "images/email.jpg",
         answers: [
-            "Click it to see where it leads",
-            "Forward it to friends",
-            "Report it as phishing",
-            "Delete the email"
-        ],
-        correct: 2,
-        explanation: "You should report the email as phishing to help prevent others from falling for the scam."
+            { text: "Ignore it", correct: false, explanation: "Ignoring it might not be enough; it could be a phishing attempt." },
+            { text: "Click on the link to see what it is", correct: false, explanation: "Never click on links in suspicious emails as they could lead to malicious sites." },
+            { text: "Report it to your IT department", correct: true, explanation: "Reporting it helps your IT department to take necessary actions and keep others safe." },
+            { text: "Reply to the sender asking if it is legitimate", correct: false, explanation: "Replying could give the sender more information about you." }
+        ]
     },
-    {
-        question: "Which of the following is a good practice for keeping your software secure?",
-        answers: [
-            "Disable automatic updates",
-            "Install updates regularly",
-            "Ignore update notifications",
-            "Only update when something breaks"
-        ],
-        correct: 1,
-        explanation: "Installing updates regularly ensures your software has the latest security patches."
-    },
-    {
-        question: "What is two-factor authentication?",
-        answers: [
-            "Using two passwords",
-            "A security process that requires two different authentication factors",
-            "Logging in from two devices",
-            "Using two different usernames"
-        ],
-        correct: 1,
-        explanation: "Two-factor authentication is a security process that requires two different authentication factors."
-    },
-    {
-        question: "What is the primary purpose of a firewall?",
-        answers: [
-            "To make your computer run faster",
-            "To block unauthorized access to your network",
-            "To store your passwords",
-            "To boost your internet speed"
-        ],
-        correct: 1,
-        explanation: "The primary purpose of a firewall is to block unauthorized access to your network."
-    }
+    // Add 8 more questions following the same structure
 ];
+
+const questionContainer = document.getElementById('question-container');
+const questionElement = document.getElementById('question');
+const answerButtonsElement = document.getElementById('answer-buttons');
+const nextButton = document.getElementById('next-btn');
+const questionImage = document.getElementById('question-image');
 
 let currentQuestionIndex = 0;
 
-function displayQuestion() {
-    const questionElement = document.getElementById('question');
-    const answers = document.getElementsByClassName('answer-btn');
-    const explanationElement = document.getElementById('explanation');
-    const progress = document.getElementById('progress');
-    
-    questionElement.textContent = questions[currentQuestionIndex].question;
-    for (let i = 0; i < answers.length; i++) {
-        answers[i].textContent = questions[currentQuestionIndex].answers[i];
-        answers[i].disabled = false;
-    }
-    explanationElement.textContent = "";
-    document.getElementById('next-btn').style.display = 'none';
-
-    // Update progress bar
-    const progressPercentage = ((currentQuestionIndex + 1) / questions.length) * 100;
-    progress.style.width = progressPercentage + '%';
+function startGame() {
+    nextButton.classList.add('hide');
+    currentQuestionIndex = 0;
+    showQuestion(questions[currentQuestionIndex]);
 }
 
-function checkAnswer(answerIndex) {
-    const explanationElement = document.getElementById('explanation');
-    const answers = document.getElementsByClassName('answer-btn');
-    for (let i = 0; i < answers.length; i++) {
-        answers[i].disabled = true;
-    }
-    if (answerIndex === questions[currentQuestionIndex].correct) {
-        explanationElement.textContent = "Correct! " + questions[currentQuestionIndex].explanation;
-        anime({
-            targets: explanationElement,
-            backgroundColor: '#d4edda',
-            color: '#155724',
-            duration: 800
-        });
+function showQuestion(question) {
+    questionElement.innerText = question.question;
+    questionImage.src = question.image;
+    answerButtonsElement.innerHTML = '';
+    question.answers.forEach(answer => {
+        const button = document.createElement('button');
+        button.innerText = answer.text;
+        button.classList.add('btn');
+        if (answer.correct) {
+            button.dataset.correct = answer.correct;
+        }
+        button.addEventListener('click', selectAnswer);
+        answerButtonsElement.appendChild(button);
+    });
+}
+
+function selectAnswer(e) {
+    const selectedButton = e.target;
+    const correct = selectedButton.dataset.correct;
+    Array.from(answerButtonsElement.children).forEach(button => {
+        setStatusClass(button, button.dataset.correct);
+        if (button === selectedButton) {
+            button.innerText += correct ? "\nCorrect!" : "\nIncorrect!";
+            button.innerText += "\n" + questions[currentQuestionIndex].answers.find(a => a.text === button.innerText.split("\n")[0]).explanation;
+        }
+    });
+    if (questions.length > currentQuestionIndex + 1) {
+        nextButton.classList.remove('hide');
     } else {
-        explanationElement.textContent = "Incorrect. " + questions[currentQuestionIndex].explanation;
-        anime({
-            targets: explanationElement,
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-            duration: 800
-        });
+        nextButton.innerText = 'Restart';
+        nextButton.classList.remove('hide');
     }
-    document.getElementById('next-btn').style.display = 'block';
 }
 
-function nextQuestion() {
+function setStatusClass(element, correct) {
+    clearStatusClass(element);
+    if (correct) {
+        element.classList.add('correct');
+    } else {
+        element.classList.add('wrong');
+    }
+}
+
+function clearStatusClass(element) {
+    element.classList.remove('correct');
+    element.classList.remove('wrong');
+}
+
+function handleNextButton() {
     currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
-        displayQuestion();
-    } else {
-        const questionContainer = document.getElementById('question-container');
-        questionContainer.innerHTML = "<p>You've completed the quiz! Great job!</p>";
-        document.getElementById('next-btn').style.display = 'none';
-    }
+    showQuestion(questions[currentQuestionIndex]);
 }
 
-window
+nextButton.addEventListener('click', () => {
+    if (questions.length > currentQuestionIndex + 1) {
+        handleNextButton();
+    } else {
+        startGame();
+    }
+});
+
+startGame();
